@@ -30,3 +30,10 @@ func Test_tldFunc(t *testing.T) {
 	_, err = f.Callback([]interface{}{""})
 	assert.Equal(t, errInvalidFQDN, err)
 }
+
+func Test_lengthFunc(t *testing.T) {
+	f := lengthFunction()
+	c, err := f.Callback([]interface{}{"foo", "bar"})
+	assert.Nil(t, err)
+	assert.Equal(t, 2, c.(int))
+}

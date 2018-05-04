@@ -51,3 +51,14 @@ func tldFunction() ast.Function {
 		},
 	}
 }
+
+func lengthFunction() ast.Function {
+	return ast.Function{
+		ArgTypes:   []ast.Type{ast.TypeList},
+		ReturnType: ast.TypeInt,
+		Variadic:   false,
+		Callback: func(input []interface{}) (interface{}, error) {
+			return len(input), nil
+		},
+	}
+}

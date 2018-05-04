@@ -30,6 +30,7 @@ func NewVM() *VM {
 
 func (vm *VM) init() {
 	vm.funcs = map[string]ast.Function{
+		"length":  lengthFunction(),
 		"replace": replaceFunction(),
 		"tld":     tldFunction(),
 	}
