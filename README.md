@@ -1,4 +1,4 @@
-# pseudo
+# pseudo [![CircleCI](https://circleci.com/gh/euforia/pseudo.svg?style=svg)](https://circleci.com/gh/euforia/pseudo)
 Pseudo aims to be a 'pseudo' language.  Its primary purpose is simplify and
 unitize development operations.
 
