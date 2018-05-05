@@ -1,0 +1,6 @@
+#!./pseudo
+#
+# This is a test pseudo script that can directly be executed
+#
+
+Output after script eval of 3 + 2 = ${3+2}

@@ -13,3 +13,18 @@ func Test_Script_Vars(t *testing.T) {
 	script.contents = append(script.contents, []byte("\n${myvar}")...)
 	assert.Equal(t, 1, len(script.Vars()))
 }
+
+func Test_Script_shabang(t *testing.T) {
+	script := NewScriptBytes([]byte(`#!./my/bin`))
+	assert.Equal(t, 0, len(script.contents))
+
+	script = NewScriptBytes([]byte(`#!./m
+
+
+`))
+	assert.Equal(t, 2, len(script.contents))
+
+	script = NewScriptBytes([]byte(`#!./bin/f
+${var}`))
+	assert.Equal(t, []byte("${var}"), script.contents)
+}

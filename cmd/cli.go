@@ -138,7 +138,7 @@ func execScriptFile(ctx *cli.Context, fpath string) error {
 
 	out := ctx.String("out")
 	if len(out) == 0 {
-		fmt.Println(result.Value)
+		fmt.Printf("%s", result.Value)
 		return nil
 	}
 

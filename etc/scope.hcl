@@ -9,6 +9,21 @@ region {
     datacenters = ["region.datacenters[0]"]
 }
 
+vcs {
+    github {
+        address = "git+ssh://github.com"
+        org     = "org"
+    }
+}
+
+registry {
+    container {
+        ecr {
+            address = "registry.container.ecr.address"
+        }
+    }
+}
+
 platform {
 
     env {

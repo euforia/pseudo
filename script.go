@@ -1,6 +1,7 @@
 package pseudo
 
 import (
+	"bytes"
 	"io/ioutil"
 	"sort"
 )
@@ -12,11 +13,29 @@ type Script struct {
 
 // NewScript loads a script from the given file returning an error on failure
 func NewScript(filename string) (*Script, error) {
+	var s *Script
+
 	b, err := ioutil.ReadFile(filename)
 	if err == nil {
-		return &Script{b}, nil
+		s = NewScriptBytes(b)
 	}
-	return nil, err
+
+	return s, err
+}
+
+// NewScriptBytes this simply removes the shabang line if one is specified
+func NewScriptBytes(b []byte) *Script {
+	var i int
+
+	if b[0] == '#' && b[1] == '!' {
+		i = bytes.IndexRune(b, '\n')
+		if i < 0 {
+			return &Script{[]byte{}}
+		}
+		i++
+	}
+
+	return &Script{b[i:]}
 }
 
 // Contents returns the script contents as a string
@@ -24,7 +43,9 @@ func (scr *Script) Contents() string {
 	return string(scr.contents)
 }
 
-// Vars returns a list of variables needed to be passed in to the 'script'
+// Vars returns a list of variables needed to be passed in to the 'script'.
+// Functions are skipped over, as such currently it does not return variables
+// referenced by functions.
 func (scr *Script) Vars() []string {
 	data := scr.contents
 	vars := map[string]struct{}{}
