@@ -1,9 +1,6 @@
 package pseudo
 
 import (
-	"io/ioutil"
-
-	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/token"
 	"github.com/hashicorp/hil/ast"
 )
@@ -18,31 +15,6 @@ func (vars VarsMap) Names() []string {
 		out = append(out, k)
 	}
 	return out
-}
-
-// LoadScopeVarsFromFile loads variables from the given file
-func LoadScopeVarsFromFile(filename string) (VarsMap, error) {
-	var vars VarsMap
-
-	in, err := ioutil.ReadFile(filename)
-	if err == nil {
-		vars, err = LoadScopeVars(in)
-	}
-
-	return vars, err
-}
-
-// LoadScopeVars parses the input to build all the variables that will be in
-// this scope
-func LoadScopeVars(in []byte) (VarsMap, error) {
-	var vars VarsMap
-
-	tree, err := hcl.ParseBytes(in)
-	if err == nil {
-		vars = walk("", tree.Node)
-	}
-
-	return vars, err
 }
 
 func variableFromToken(tkn token.Token) ast.Variable {

@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"github.com/euforia/pseudo"
-	"github.com/hashicorp/hil/ast"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -109,13 +108,9 @@ func execScriptDir(ctx *cli.Context, fpath string) error {
 }
 
 func execScriptFile(ctx *cli.Context, fpath string) error {
-	rvars, err := loadSourceVars(ctx)
+	vars, err := loadSourceVars(ctx)
 	if err != nil {
 		return err
-	}
-	vars := make(map[string]ast.Variable)
-	for k, v := range rvars {
-		vars[k[1:]] = v
 	}
 
 	script, err := pseudo.NewScript(fpath)
@@ -158,8 +153,18 @@ func execScriptFile(ctx *cli.Context, fpath string) error {
 
 func loadSourceVars(ctx *cli.Context) (pseudo.VarsMap, error) {
 	varSrc, err := url.Parse(ctx.String("scope"))
-	if err == nil {
-		return pseudo.LoadScopeVarsFromFile(varSrc.Path)
+	if err != nil {
+		return nil, err
 	}
-	return nil, err
+	// vmap, err := pseudo.LoadScopeVarsFromFile(varSrc.Path)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// out := make(pseudo.VarsMap, len(vmap))
+	// for k, v := range vmap {
+	// 	out[k[1:]] = v
+	// }
+	// return out, nil
+	return pseudo.LoadHCLScopeVarsFromFile(varSrc.Path)
 }

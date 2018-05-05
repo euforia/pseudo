@@ -1,13 +1,47 @@
 package pseudo
 
+// This file contains scope variable loaders for HCL and HIL format
+
 import (
 	"fmt"
+	"io/ioutil"
 
+	"github.com/hashicorp/hcl"
 	cast "github.com/hashicorp/hcl/hcl/ast"
 	iast "github.com/hashicorp/hil/ast"
 )
 
-func walkItem(parent string, item *cast.ObjectItem) map[string]iast.Variable {
+// LoadHCLScopeVarsFromFile loads variables from the given file
+func LoadHCLScopeVarsFromFile(filename string) (VarsMap, error) {
+	var vars VarsMap
+
+	in, err := ioutil.ReadFile(filename)
+	if err == nil {
+		vars, err = LoadHCLScopeVars(in)
+	}
+
+	return vars, err
+}
+
+// LoadHCLScopeVars parses the input to build all the variables that will be in
+// this scope
+func LoadHCLScopeVars(in []byte) (VarsMap, error) {
+	var out VarsMap
+
+	tree, err := hcl.ParseBytes(in)
+	if err == nil {
+		vars := walk("", tree.Node)
+		// Remove the suffix '.'
+		out = make(VarsMap, len(vars))
+		for k, v := range vars {
+			out[k[1:]] = v
+		}
+	}
+
+	return out, err
+}
+
+func walkObjectItem(parent string, item *cast.ObjectItem) map[string]iast.Variable {
 	out := make(map[string]iast.Variable)
 
 	switch item.Val.(type) {
@@ -58,7 +92,7 @@ func walk(parent string, node cast.Node) map[string]iast.Variable {
 
 	case *cast.ObjectItem:
 		item := node.(*cast.ObjectItem)
-		items := walkItem(parent, item)
+		items := walkObjectItem(parent, item)
 		for k, v := range items {
 			out[k] = v
 		}

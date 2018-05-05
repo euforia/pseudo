@@ -72,12 +72,12 @@ func varsListExec(ctx *cli.Context) error {
 
 		if ctx.Bool("type") {
 			for _, v := range vars {
-				tw.Append([]string{v[1:], varmap[v].Type.String()[4:]})
+				tw.Append([]string{v, varmap[v].Type.String()[4:]})
 			}
 
 		} else {
 			for _, v := range vars {
-				tw.Append([]string{v[1:]})
+				tw.Append([]string{v})
 			}
 		}
 

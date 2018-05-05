@@ -101,12 +101,8 @@ func Test_VM_script_dir(t *testing.T) {
 }
 
 func Test_VM(t *testing.T) {
-	m, err := LoadScopeVarsFromFile(testScopeVarsSpec)
+	vars, err := LoadHCLScopeVarsFromFile(testScopeVarsSpec)
 	assert.Nil(t, err)
-	vars := make(map[string]ast.Variable)
-	for k, v := range m {
-		vars[k[1:]] = v
-	}
 
 	vm := NewVM()
 	vm.SetVars(vars)

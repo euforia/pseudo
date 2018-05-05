@@ -60,7 +60,16 @@ func (scr *Script) Vars() []string {
 				s = i
 			}
 
-		case '[', '(', '+', '>', '<':
+		case '[', '+', '>', '<':
+			if s >= 0 {
+				s = -1
+			}
+
+		case '(':
+			// TODO:
+			// This is a function. Parse out any vars ref'd by the function. For
+			// now we ignore the whole function block i.e. from '(' to ')'
+			// within a ${ ... } block
 			if s >= 0 {
 				s = -1
 			}

@@ -1,3 +1,4 @@
+
 job "myjob" {
   region      = "${region.id}"
   datacenters = ["${region.datacenters[0]}"]
