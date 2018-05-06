@@ -156,12 +156,13 @@ func Test_Ewok(t *testing.T) {
 	val1, ok := w1.Get(".Pointer.Name")
 	assert.True(t, ok)
 	assert.Equal(t, "pointer", val1.Interface().(string))
+
 	c := 0
 	w1.Iter(func(key string, value reflect.Value) bool {
 		c++
-		return false
+		return true
 	})
-	assert.Equal(t, 1, c)
+	assert.True(t, c > 0)
 }
 
 func Test_Ewok_TrimRoot(t *testing.T) {

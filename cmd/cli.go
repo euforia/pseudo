@@ -102,14 +102,6 @@ func execScriptDir(ctx *cli.Context, fpath string) error {
 	}
 
 	return errors.New("not yet implemented")
-	// 	dirfiles, err := ioutil.ReadDir(fpath)
-	// 	if err == nil {
-	// 		for _, f := range dirfiles {
-	// 			fmt.Println(f.Name())
-	// 		}
-	// 		err = errors.New("not yet implemented")
-	// 	}
-	// 	return err
 }
 
 func execScriptFile(ctx *cli.Context, fpath string) error {
