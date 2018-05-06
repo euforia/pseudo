@@ -14,7 +14,7 @@ var (
 	testJobSpec       = "./test-fixtures/jobspec.nomad.hcl"
 	testPlatformSpec  = "./test-fixtures/platform.hcl"
 	testRandVars      = "./test-fixtures/vars.tfvars"
-	testScopeVarsSpec = "./etc/scope.hcl"
+	testScopeVarsSpec = "./etc/context.hcl"
 )
 
 var testVariables = VarsMap{

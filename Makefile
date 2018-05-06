@@ -21,7 +21,7 @@ deps:
 	dep ensure
 
 test:
-	go test -cover .
+	go test -cover . ./ewok
 
 pseudo:
 	$(BUILD_CMD) -o $(NAME) $(SOURCE_FILES)

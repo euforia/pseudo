@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -26,10 +25,10 @@ func NewCLI(version string) *CLI {
 			EnableShellCompletion: true,
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:    "scope",
-					Aliases: []string{"s"},
+					Name:    "context",
+					Aliases: []string{"ctx", "c"},
 					Usage:   "source variables `path`",
-					Value:   "./etc/scope.hcl", // Temporary
+					Value:   "./etc/context.hcl", // Temporary
 				},
 				&cli.StringFlag{
 					Name:    "out",
@@ -97,18 +96,24 @@ func execScript(ctx *cli.Context) error {
 }
 
 func execScriptDir(ctx *cli.Context, fpath string) error {
-	dirfiles, err := ioutil.ReadDir(fpath)
-	if err == nil {
-		for _, f := range dirfiles {
-			fmt.Println(f.Name())
-		}
-		err = errors.New("not yet implemented")
+	_, err := pseudo.ReadDirFiles(fpath)
+	if err != nil {
+		return err
 	}
-	return err
+
+	return errors.New("not yet implemented")
+	// 	dirfiles, err := ioutil.ReadDir(fpath)
+	// 	if err == nil {
+	// 		for _, f := range dirfiles {
+	// 			fmt.Println(f.Name())
+	// 		}
+	// 		err = errors.New("not yet implemented")
+	// 	}
+	// 	return err
 }
 
 func execScriptFile(ctx *cli.Context, fpath string) error {
-	vars, err := loadSourceVars(ctx)
+	vars, err := loadVarsMap(ctx)
 	if err != nil {
 		return err
 	}
@@ -151,20 +156,23 @@ func execScriptFile(ctx *cli.Context, fpath string) error {
 	return err
 }
 
-func loadSourceVars(ctx *cli.Context) (pseudo.VarsMap, error) {
-	varSrc, err := url.Parse(ctx.String("scope"))
+func loadVarsMap(ctx *cli.Context) (pseudo.VarsMap, error) {
+	uri, err := url.Parse(ctx.String("context"))
 	if err != nil {
 		return nil, err
 	}
-	// vmap, err := pseudo.LoadScopeVarsFromFile(varSrc.Path)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// out := make(pseudo.VarsMap, len(vmap))
-	// for k, v := range vmap {
-	// 	out[k[1:]] = v
-	// }
-	// return out, nil
-	return pseudo.LoadHCLScopeVarsFromFile(varSrc.Path)
+
+	var varsmap pseudo.VarsMap
+
+	switch uri.Scheme {
+
+	case "http", "https":
+		err = fmt.Errorf("scheme='%s' not yet supported", uri.Scheme)
+
+	default:
+		varsmap, err = pseudo.LoadHCLScopeVarsFromFile(uri.Path)
+
+	}
+
+	return varsmap, err
 }

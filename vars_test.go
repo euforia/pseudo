@@ -39,3 +39,8 @@ func Test_walk(t *testing.T) {
 	v, _ = vars[".bool"]
 	assert.True(t, v.Value.(bool))
 }
+
+func Test_ReadDirFiles(t *testing.T) {
+	_, err := ReadDirFiles("./does/not/exist")
+	assert.NotNil(t, err)
+}
