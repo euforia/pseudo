@@ -21,7 +21,7 @@ deps:
 	dep ensure
 
 test:
-	go test -cover . ./ewok
+	go test -cover $(shell go list ./... | grep -v /vendor | grep -v /cmd)
 
 pseudo:
 	$(BUILD_CMD) -o $(NAME) $(SOURCE_FILES)
