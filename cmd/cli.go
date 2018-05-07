@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/euforia/pseudo"
-	"github.com/euforia/pseudo/scope"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -28,7 +27,7 @@ func NewCLI(version string) *CLI {
 				&cli.StringFlag{
 					Name:    "context",
 					Aliases: []string{"ctx", "c"},
-					Usage:   "source variables `path`",
+					Usage:   "context variables `path`",
 					Value:   "./etc/context.hcl", // Temporary
 				},
 				&cli.StringFlag{
@@ -106,7 +105,7 @@ func execScriptDir(ctx *cli.Context, fpath string) error {
 }
 
 func execScriptFile(ctx *cli.Context, fpath string) error {
-	vars, err := loadVarsMap(ctx)
+	vars, err := loadContextVars(ctx)
 	if err != nil {
 		return err
 	}
@@ -147,25 +146,4 @@ func execScriptFile(ctx *cli.Context, fpath string) error {
 		err = fh.Close()
 	}
 	return err
-}
-
-func loadVarsMap(ctx *cli.Context) (scope.Variables, error) {
-	uri, err := url.Parse(ctx.String("context"))
-	if err != nil {
-		return nil, err
-	}
-
-	var varsmap scope.Variables
-
-	switch uri.Scheme {
-
-	case "http", "https":
-		err = fmt.Errorf("scheme='%s' not yet supported", uri.Scheme)
-
-	default:
-		varsmap, err = scope.BuildHCLScopeVarsFromFile(uri.Path)
-
-	}
-
-	return varsmap, err
 }
