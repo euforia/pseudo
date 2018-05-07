@@ -56,7 +56,7 @@
   branch = "master"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
-  revision = "d5dd8a50526aadb3d5f2c9b5233277bc2db90e88"
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -79,6 +79,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7df537f3be9c9b2fc8be760be0b89662f3063089e3132540a6027d25c60257ae"
+  inputs-digest = "d2341db93bbf35b893fbdf8933973c6d74dddf6f14d4cf98437afa9f16ed29b7"
   solver-name = "gps-cdcl"
   solver-version = 1
