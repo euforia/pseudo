@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/euforia/pseudo/ewok"
+	"github.com/euforia/pseudo/scope"
 	"github.com/hashicorp/hcl"
 )
 
@@ -46,6 +46,8 @@ func unmarshal(ct string, b []byte, data interface{}) error {
 	case strings.Contains(ct, "hcl"):
 		err = hcl.Unmarshal(b, data)
 
+	case strings.Contains(ct, "pseudo"):
+
 	default:
 		err = fmt.Errorf("unsupported Content-Type='%s'", ct)
 
@@ -56,23 +58,44 @@ func unmarshal(ct string, b []byte, data interface{}) error {
 
 // LoadIndex loads an index from the URL. It reads the data, parses and indexes
 // the data structure
-func LoadIndex(uri *url.URL, opts ...IndexOptions) (*ewok.Ewok, error) {
+func LoadVariables(uri *url.URL, opts ...IndexOptions) (scope.Variables, error) {
 	contentType, b, err := loadURI(uri)
 	if err != nil {
 		return nil, err
 	}
 
+	opt := buildIndexOptions(contentType, opts...)
+	return LoadVariableBytes(opt.ContentType, b)
+}
+
+// LoadIndexBytes loads an index from the given bytes.
+func LoadVariableBytes(contentType string, b []byte) (scope.Variables, error) {
 	var (
-		opt  = buildIndexOptions(contentType, opts...)
-		conf = ewok.Config{TrimRoot: true, ScalarsOnly: true}
-		ew   = ewok.New(conf)
-		data = make(map[string]interface{})
+		//conf = ewok.Config{TrimRoot: true, ScalarsOnly: true}
+		//ew   = ewok.New(conf)
+		//
+		//v   interface{}
+		vars scope.Variables
+		err  error
 	)
 
-	err = unmarshal(opt.ContentType, b, &data)
-	if err == nil {
-		ew.Index(data)
+	if contentType == "pseudo" {
+		//v = make(map[string]map[string]interface{})
+		//err = unmarshal(contentType, b, &v)
+		//fmt.Println(er, tt)
+		vars, err = scope.BuildHCLScopeVars(b)
+	} else {
+
+		builder := scope.NewReflectBuilder("", ".")
+
+		v := make(map[string]interface{})
+		err = unmarshal(contentType, b, &v)
+		if err == nil {
+			if err = builder.Build(v); err == nil {
+				vars = builder.Variables()
+			}
+		}
 	}
 
-	return ew, err
+	return vars, err
 }

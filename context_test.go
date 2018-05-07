@@ -14,8 +14,10 @@ var (
 
 func Test_LoadURI_http_json(t *testing.T) {
 	uri, _ := url.Parse(testURI)
-	_, err := LoadIndex(uri)
-	assert.Nil(t, err)
+	_, err := LoadVariables(uri)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 }
 
@@ -23,8 +25,8 @@ func Test_LoadURI_file_hcl(t *testing.T) {
 	uri, err := url.Parse(testScopeVarsSpec)
 	assert.Nil(t, err)
 
-	opt := IndexOptions{ContentType: "hcl"}
-	idx, err := LoadIndex(uri, opt)
+	opt := IndexOptions{ContentType: "pseudo"}
+	vars, err := LoadVariables(uri, opt)
 	assert.Nil(t, err)
 
 	keys := []string{
@@ -33,15 +35,17 @@ func Test_LoadURI_file_hcl(t *testing.T) {
 		"app.name",
 		"registry.container.ecr.address",
 	}
+
+	// vars := idx.Variables()
 	for _, v := range keys {
-		_, ok := idx.Get(v)
+		_, ok := vars[v]
 		assert.True(t, ok)
 	}
 }
 
 func Test_LoadURI_error(t *testing.T) {
 	uri, _ := url.Parse("./does/not/exist")
-	_, err := LoadIndex(uri)
+	_, err := LoadVariables(uri)
 	assert.NotNil(t, err)
 }
 

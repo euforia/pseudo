@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/euforia/pseudo"
+	"github.com/euforia/pseudo/scope"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -148,13 +149,13 @@ func execScriptFile(ctx *cli.Context, fpath string) error {
 	return err
 }
 
-func loadVarsMap(ctx *cli.Context) (pseudo.VarsMap, error) {
+func loadVarsMap(ctx *cli.Context) (scope.Variables, error) {
 	uri, err := url.Parse(ctx.String("context"))
 	if err != nil {
 		return nil, err
 	}
 
-	var varsmap pseudo.VarsMap
+	var varsmap scope.Variables
 
 	switch uri.Scheme {
 
@@ -162,7 +163,7 @@ func loadVarsMap(ctx *cli.Context) (pseudo.VarsMap, error) {
 		err = fmt.Errorf("scheme='%s' not yet supported", uri.Scheme)
 
 	default:
-		varsmap, err = pseudo.LoadHCLScopeVarsFromFile(uri.Path)
+		varsmap, err = scope.BuildHCLScopeVarsFromFile(uri.Path)
 
 	}
 

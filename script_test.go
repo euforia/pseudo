@@ -6,6 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_Script(t *testing.T) {
+	scr, _ := NewScript(testJobSpec)
+	vars := scr.Vars()
+	t.Log(vars)
+}
+
+func Test_ReadDirFiles(t *testing.T) {
+	_, err := ReadDirFiles("./does/not/exist")
+	assert.NotNil(t, err)
+}
+
 func Test_Script_Vars(t *testing.T) {
 	script, _ := NewScript(testRandVars)
 	assert.Equal(t, 0, len(script.Vars()))

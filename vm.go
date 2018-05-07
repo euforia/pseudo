@@ -3,6 +3,7 @@ package pseudo
 import (
 	"errors"
 
+	"github.com/euforia/pseudo/scope"
 	"github.com/hashicorp/hil"
 	"github.com/hashicorp/hil/ast"
 )
@@ -12,7 +13,7 @@ type VM struct {
 	// Root node available after parsing
 	a ast.Node
 	// Scoped variables
-	vars VarsMap
+	vars scope.Variables
 	// Scoped functions
 	funcs map[string]ast.Function
 }
@@ -81,7 +82,7 @@ func (vm *VM) Eval() (*hil.EvaluationResult, error) {
 		return nil, errors.New("must parse script")
 	}
 
-	// Build function scope
+	// Build functions scope
 	funcs := make(map[string]ast.Function)
 	for k, v := range vm.funcs {
 		funcs[k] = v
@@ -94,10 +95,13 @@ func (vm *VM) Eval() (*hil.EvaluationResult, error) {
 		},
 	}
 
-	result, err := hil.Eval(vm.a, conf)
+	var (
+		result *hil.EvaluationResult
+		r, err = hil.Eval(vm.a, conf)
+	)
 	if err == nil {
-		return &result, nil
+		result = &r
 	}
 
-	return nil, err
+	return result, err
 }

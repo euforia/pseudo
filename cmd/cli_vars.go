@@ -3,13 +3,13 @@ package main
 import (
 	"net/url"
 	"os"
-	"reflect"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/urfave/cli.v2"
 
 	"github.com/euforia/pseudo"
-	"github.com/euforia/pseudo/ewok"
+	"github.com/euforia/pseudo/scope"
 )
 
 func varsCommand(biname string) *cli.Command {
@@ -64,25 +64,26 @@ func varsListExec(ctx *cli.Context) error {
 
 	} else {
 		// Context variables
-		ew, err := loadContextVars(ctx)
+		vars, err := loadContextVars(ctx)
 		if err != nil {
 			return err
 		}
 
+		names := vars.Names()
+
 		if ctx.Bool("type") {
-			ew.Iter(func(key string, value reflect.Value) bool {
-				val := value.Kind().String()
-				if val == "invalid" {
-					val = "unknown"
-				}
-				tw.Append([]string{key, val})
-				return true
-			})
+
+			for _, n := range names {
+				typ := strings.ToLower(vars[n].Type.String()[4:])
+				tw.Append([]string{n, typ})
+			}
+
 		} else {
-			ew.Iter(func(key string, value reflect.Value) bool {
-				tw.Append([]string{key})
-				return true
-			})
+
+			for i := range names {
+				tw.Append([]string{names[i]})
+			}
+
 		}
 
 	}
@@ -92,7 +93,7 @@ func varsListExec(ctx *cli.Context) error {
 	return nil
 }
 
-func loadContextVars(ctx *cli.Context) (*ewok.Ewok, error) {
+func loadContextVars(ctx *cli.Context) (scope.Variables, error) {
 	uri, err := url.Parse(ctx.String("context"))
 	if err != nil {
 		return nil, err
@@ -100,8 +101,8 @@ func loadContextVars(ctx *cli.Context) (*ewok.Ewok, error) {
 
 	var opt pseudo.IndexOptions
 	if !uri.IsAbs() {
-		opt.ContentType = "hcl"
+		opt.ContentType = "pseudo"
 	}
 
-	return pseudo.LoadIndex(uri, opt)
+	return pseudo.LoadVariables(uri, opt)
 }

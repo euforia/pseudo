@@ -3,9 +3,11 @@ package pseudo
 import (
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"testing"
 
+	"github.com/euforia/pseudo/scope"
 	"github.com/hashicorp/hil/ast"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +19,7 @@ var (
 	testScopeVarsSpec = "./etc/context.hcl"
 )
 
-var testVariables = VarsMap{
+var testVariables = scope.Variables{
 	"region.id": ast.Variable{
 		Type:  ast.TypeString,
 		Value: "us-west-2",
@@ -101,9 +103,12 @@ func Test_VM_script_dir(t *testing.T) {
 }
 
 func Test_VM(t *testing.T) {
-	vars, err := LoadHCLScopeVarsFromFile(testScopeVarsSpec)
+	uri, _ := url.Parse(testScopeVarsSpec)
+	vars, err := LoadVariables(uri, IndexOptions{ContentType: "pseudo"})
+	//vars, err := LoadHCLScopeVarsFromFile(testScopeVarsSpec)
 	assert.Nil(t, err)
 
+	// vars := idx.Variables()
 	vm := NewVM()
 	vm.SetVars(vars)
 
