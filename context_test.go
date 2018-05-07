@@ -36,7 +36,6 @@ func Test_LoadURI_file_hcl(t *testing.T) {
 		"registry.container.ecr.address",
 	}
 
-	// vars := idx.Variables()
 	for _, v := range keys {
 		_, ok := vars[v]
 		assert.True(t, ok)

@@ -56,8 +56,8 @@ func unmarshal(ct string, b []byte, data interface{}) error {
 	return err
 }
 
-// LoadIndex loads an index from the URL. It reads the data, parses and indexes
-// the data structure
+// LoadVariables loads an index from the URL. It reads the data, parses and
+// indexes the data structure
 func LoadVariables(uri *url.URL, opts ...IndexOptions) (scope.Variables, error) {
 	contentType, b, err := loadURI(uri)
 	if err != nil {
@@ -68,33 +68,27 @@ func LoadVariables(uri *url.URL, opts ...IndexOptions) (scope.Variables, error) 
 	return LoadVariableBytes(opt.ContentType, b)
 }
 
-// LoadIndexBytes loads an index from the given bytes.
+// LoadVariableBytes loads an index from the given bytes.
 func LoadVariableBytes(contentType string, b []byte) (scope.Variables, error) {
 	var (
-		//conf = ewok.Config{TrimRoot: true, ScalarsOnly: true}
-		//ew   = ewok.New(conf)
-		//
-		//v   interface{}
 		vars scope.Variables
 		err  error
 	)
 
 	if contentType == "pseudo" {
-		//v = make(map[string]map[string]interface{})
-		//err = unmarshal(contentType, b, &v)
-		//fmt.Println(er, tt)
 		vars, err = scope.BuildHCLScopeVars(b)
 	} else {
 
 		builder := scope.NewReflectBuilder("", ".")
-
 		v := make(map[string]interface{})
+
 		err = unmarshal(contentType, b, &v)
 		if err == nil {
 			if err = builder.Build(v); err == nil {
 				vars = builder.Variables()
 			}
 		}
+
 	}
 
 	return vars, err
