@@ -41,7 +41,7 @@ func (t *walker) Enter(l reflectwalk.Location) error {
 		t.prefix += t.lastkey
 
 	}
-	//log.Printf("Ent prefix=%s (%v)", t.prefix, l)
+
 	return nil
 }
 
@@ -62,7 +62,7 @@ func (t *walker) Exit(l reflectwalk.Location) error {
 	case reflectwalk.Slice:
 		if t.processElems {
 			// Build ast list variable and add to vars
-			t.vars[t.prefix] = ast.Variable{
+			t.vars[t.prefix[1:]] = ast.Variable{
 				Value: t.currslice, Type: ast.TypeList,
 			}
 
@@ -71,7 +71,7 @@ func (t *walker) Exit(l reflectwalk.Location) error {
 		}
 
 	}
-	//log.Printf("Ext prefix='%s' (%v)", t.prefix, l)
+
 	return nil
 }
 
@@ -132,12 +132,10 @@ func (t *walker) Primitive(v reflect.Value) error {
 		return nil
 	}
 
-	fmt.Println(t.prefix, v.Type(), v.Kind(), v)
-
 	avar, err := hilVarTypeFromValue(v)
 	if err == nil {
 		avar.Value = iface
-		t.vars[t.prefix] = avar
+		t.vars[t.prefix[1:]] = avar
 	}
 
 	return err

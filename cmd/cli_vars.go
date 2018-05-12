@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"strings"
@@ -38,28 +39,51 @@ func varsListCommand(biname string) *cli.Command {
 				Aliases: []string{"t"},
 				Usage:   "Show data type",
 			},
+			&cli.BoolFlag{
+				Name:    "value",
+				Aliases: []string{"v"},
+				Usage:   "Show values",
+			},
 		},
 		Action: varsListExec,
 	}
 }
 
+func getScriptVars(scriptfile string) ([][]string, error) {
+	script, err := pseudo.NewScript(scriptfile)
+	if err != nil {
+		return nil, err
+	}
+
+	vars := script.Vars()
+	data := make([][]string, len(vars))
+	for i := range vars {
+		data[i] = []string{vars[i]}
+	}
+	return data, nil
+}
+
 func varsListExec(ctx *cli.Context) error {
 	tw := tablewriter.NewWriter(os.Stdout)
-	tw.SetBorder(false)
-	tw.SetColumnSeparator("")
+	tw.SetAlignment(tablewriter.ALIGN_LEFT)
 
-	args := ctx.Args()
+	var (
+		header   = make([]string, 1, 3)
+		data     [][]string
+		showType = ctx.Bool("type")
+		showVal  = ctx.Bool("value")
+
+		args = ctx.Args()
+		err  error
+	)
+
+	header[0] = "key"
 
 	if args.Len() > 0 {
 		// Script variables
-		script, err := pseudo.NewScript(args.Get(0))
+		data, err = getScriptVars(args.Get(0))
 		if err != nil {
 			return err
-		}
-
-		vars := script.Vars()
-		for i := range vars {
-			tw.Append([]string{vars[i]})
 		}
 
 	} else {
@@ -70,24 +94,38 @@ func varsListExec(ctx *cli.Context) error {
 		}
 
 		names := vars.Names()
+		data = make([][]string, len(names))
 
-		if ctx.Bool("type") {
+		for j, name := range names {
+			data[j] = make([]string, 1, 3)
+			data[j][0] = name
+		}
 
-			for _, n := range names {
-				typ := strings.ToLower(vars[n].Type.String()[4:])
-				tw.Append([]string{n, typ})
+		if showType && showVal {
+			header = append(header, "type", "value")
+			for j, name := range names {
+				typ := strings.ToLower(vars[name].Type.String()[4:])
+				val := fmt.Sprintf("%v", vars[name].Value)
+				data[j] = append(data[j], typ, val)
 			}
-
-		} else {
-
-			for i := range names {
-				tw.Append([]string{names[i]})
+		} else if showType {
+			header = append(header, "type")
+			for j, name := range names {
+				typ := strings.ToLower(vars[name].Type.String()[4:])
+				data[j] = append(data[j], typ)
 			}
-
+		} else if showVal {
+			header = append(header, "value")
+			for j, name := range names {
+				val := fmt.Sprintf("%v", vars[name].Value)
+				data[j] = append(data[j], val)
+			}
 		}
 
 	}
 
+	tw.SetHeader(header)
+	tw.AppendBulk(data)
 	tw.Render()
 
 	return nil

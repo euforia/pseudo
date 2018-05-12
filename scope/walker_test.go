@@ -60,22 +60,22 @@ func testData() *testStruct {
 }
 
 var expectedKeys = []string{
-	".Disabled",
-	".Map.1",
-	".Map.2",
-	".NestedMap.foo.3.Name",
-	".NestedMap.foo.3.Precision",
-	".NestedMap.foo.4.Labels",
-	".NestedMap.bar.five.Labels",
-	".NestedMap.bar.six",
-	".Pointer.Name",
-	".Pointer.Precision",
-	".Struct.Labels",
-	".Iface.Labels",
-	".Slices.0.Name",
-	".Slices.0.Precision",
-	".Slices.1.Name",
-	".Slices.1.Precision",
+	"Disabled",
+	"Map.1",
+	"Map.2",
+	"NestedMap.foo.3.Name",
+	"NestedMap.foo.3.Precision",
+	"NestedMap.foo.4.Labels",
+	"NestedMap.bar.five.Labels",
+	"NestedMap.bar.six",
+	"Pointer.Name",
+	"Pointer.Precision",
+	"Struct.Labels",
+	"Iface.Labels",
+	"Slices.0.Name",
+	"Slices.0.Precision",
+	"Slices.1.Name",
+	"Slices.1.Precision",
 }
 
 func Test_reflectWalker(t *testing.T) {
