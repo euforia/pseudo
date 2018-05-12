@@ -1,6 +1,7 @@
 package scope
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"github.com/hashicorp/hil/ast"
@@ -12,9 +13,12 @@ var (
 )
 
 func Test_LoadHCLScopeVarsFromFile(t *testing.T) {
-	m, err := BuildHCLScopeVarsFromFile(testScopeVarsSpec)
+	in, _ := ioutil.ReadFile(testScopeVarsSpec)
+	b := NewPseudoBuilder("")
+	err := b.Build(in)
+
 	assert.Nil(t, err)
-	t.Log(m.Names())
+	t.Log(b.Variables().Names())
 }
 
 func Test_ReflectBuilder(t *testing.T) {

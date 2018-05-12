@@ -75,9 +75,13 @@ func LoadVariableBytes(contentType string, b []byte) (scope.Variables, error) {
 		err  error
 	)
 
+	// custom hcl parser
 	if contentType == "pseudo" {
-		// custom hcl parser
-		vars, err = scope.BuildHCLScopeVars(b)
+		builder := scope.NewPseudoBuilder("")
+		if err = builder.Build(b); err == nil {
+			vars = builder.Variables()
+		}
+
 	} else {
 
 		builder := scope.NewReflectBuilder("", ".")
