@@ -75,6 +75,19 @@ func (vm *VM) Parse(script string) (err error) {
 	return err
 }
 
+// ParseEval is a helper function to set variables, parse the script and
+// evaluate it
+func (vm *VM) ParseEval(script string, vars scope.Variables) (result *hil.EvaluationResult, err error) {
+	vm.SetVars(vars)
+
+	err = vm.Parse(script)
+	if err == nil {
+		result, err = vm.Eval()
+	}
+
+	return result, err
+}
+
 // Eval evaluates a parsed script.  Parse must be called before a call to Eval
 // can be made
 func (vm *VM) Eval() (*hil.EvaluationResult, error) {
